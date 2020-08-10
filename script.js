@@ -15,10 +15,7 @@ let imgIndex = '';
 // ------------- СОЗДАНИЕ РАЗМЕТКИ ----------------
 
 let galleryArr = photos.map(elem => {
-  let galleryItem = document.createElement('li');
-  galleryItem.insertAdjacentHTML(
-    'beforeend',
-    `<li class="gallery__item">
+  let galleryItem = `<li class="gallery__item">
   <a
     class="gallery__link"
     href="${elem.original}"
@@ -31,12 +28,13 @@ let galleryArr = photos.map(elem => {
       alt="${elem.description}"
     />
   </a>
-</li>`,
-  );
+</li>`;
+
   return galleryItem;
 });
+refs.gallery.insertAdjacentHTML('beforeend', galleryArr.join(''));
 
-refs.gallery.append(...galleryArr);
+// ---------------------------------------
 
 // -------------- ВЕШАЕМ СЛУШАТЕЛЯ НА СПИСОК и НА КНОПКУ ЗАКРЫТИЯ МОДАЛКИ и НА ССЫЛКУ ЧТОБЫ СНЯТЬ АВТОПЕРЕХОД ------------
 
@@ -44,6 +42,8 @@ refs.gallery.addEventListener('click', onPhotoClick);
 refs.modalCloseBtn.addEventListener('click', onButtonClick);
 refs.lightbox.addEventListener('click', onOverlayClick);
 window.addEventListener('keydown', onEscPress);
+window.addEventListener('keyup', onArrowRight);
+window.addEventListener('keyup', onArrowLeft);
 refs.link.addEventListener('click', onPhotoClick);
 
 // -------------- ДОБАВЛЯЕМ КЛАСС ДЛЯ МОДАЛКИ ПРИ КЛИКЕ -----------
@@ -55,7 +55,7 @@ function onPhotoClick(event) {
   if (clickedPhoto.nodeName !== 'IMG') return;
   refs.lightbox.classList.add('is-open');
   refs.modalImage.setAttribute('src', `${clickedPhoto.dataset.source}`);
-  imgIndex = clickedPhoto.dataset.index;
+  imgIndex = Number(clickedPhoto.dataset.index);
 }
 
 // ------------ УБИРАЕМ КЛАСС МОДАЛКИ ПРИ КЛИКЕ И ЧИСТИМ src У КАРТИНКИ -----
@@ -77,6 +77,26 @@ function onEscPress(event) {
     onButtonClick();
   }
 }
+
+function onArrowRight() {
+  if (
+    !refs.lightbox.classList.contains('is-open') ||
+    event.key !== 'ArrowRight'
+  )
+    return;
+  if (imgIndex === photos.length - 1) return;
+  refs.modalImage.src = photos[imgIndex + 1].original;
+  imgIndex += 1;
+}
+
+// function onArrowLeft() {
+//   if (!refs.lightbox.classList.contains('is-open') || event.key === 'ArrowLeft')
+//     return;
+//   if (imgIndex === 0) return;
+//   refs.modalImage.src = photos[imgIndex - 1].original;
+//   imgIndex -= 1;
+// }
+
 //
 //
 //
